@@ -1,0 +1,187 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary: #4F46E5;
+  --primary-dark: #3730A3;
+  --accent: #F59E0B;
+  --teal: #0D9488;
+  --bg-outer: #EAEFF5;
+  --surface: #FFFFFF;
+  --surface-muted: #F6F8FB;
+}
+
+body {
+  background-color: var(--bg-outer);
+  color: #1E242B;
+  font-family: 'Plus Jakarta Sans Variable', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom Slim Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #EAEFF5;
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb {
+  background: #C7D2FE;
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #4F46E5;
+}
+
+/* Hero Header & Sculpted Semicircle Dial */
+.hero-banner {
+  background: linear-gradient(135deg, #4F46E5 0%, #4338CA 58%, #3730A3 100%);
+  position: relative;
+}
+
+.strategy-arc-wrapper {
+  position: relative;
+  width: min(310px, 100%);
+  height: 188px;
+  margin: 0 auto;
+  z-index: 20;
+}
+
+.strategy-arc-body {
+  position: absolute;
+  top: -12px;
+  left: 0;
+  width: 100%;
+  height: 196px;
+  background: linear-gradient(180deg, #493FE0 0%, #4338CA 65%, #3B30B8 100%);
+  border-bottom-left-radius: 170px;
+  border-bottom-right-radius: 170px;
+  box-shadow: 0 14px 28px -8px rgba(55, 48, 163, 0.35);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: 8px;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.strategy-arc-ring {
+  position: absolute;
+  inset: 10px;
+  top: -10px;
+  border-bottom-left-radius: 155px;
+  border-bottom-right-radius: 155px;
+  border: 6px solid rgba(255, 255, 255, 0.92);
+  border-top: none;
+  pointer-events: none;
+}
+
+/* Virtual Debit Card */
+.virtual-card-bg {
+  background: linear-gradient(135deg, #14B8A6 0%, #0D9488 52%, #0F766E 100%);
+  position: relative;
+  overflow: hidden;
+  transition: filter 0.3s ease, transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease;
+}
+.virtual-card-bg.frozen {
+  background: linear-gradient(135deg, #64748B 0%, #475569 55%, #334155 100%);
+}
+.virtual-card-bg::before {
+  content: '';
+  position: absolute;
+  top: -45%;
+  right: -25%;
+  width: 210px;
+  height: 210px;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0) 70%);
+  pointer-events: none;
+}
+
+/* Amber Promo Card */
+.promo-card-bg {
+  background: linear-gradient(135deg, #F59E0B 0%, #EA8A0C 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Crisp Corporate Animations */
+@keyframes fadeSlideUp {
+  0% { opacity: 0; transform: translateY(12px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.animate-stagger-1 { animation: fadeSlideUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.animate-stagger-2 { animation: fadeSlideUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.06s both; }
+.animate-stagger-3 { animation: fadeSlideUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.12s both; }
+
+.hover-lift {
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px -8px rgba(15, 23, 42, 0.08);
+}
+
+.chart-path-animate {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: drawStroke 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+@keyframes drawStroke {
+  to { stroke-dashoffset: 0; }
+}
+
+/* Nav Active Tab Indicator */
+.nav-tab-btn {
+  position: relative;
+  height: 100%;
+  display: inline-flex;
+  align-items: center;
+  transition: color 0.2s ease;
+}
+.nav-tab-btn::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%) scaleX(0);
+  width: 44px;
+  height: 3.5px;
+  border-radius: 99px 99px 0 0;
+  background-color: #4F46E5;
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.nav-tab-btn.active {
+  color: #1E242B;
+  font-weight: 700;
+}
+.nav-tab-btn.active::after {
+  transform: translateX(-50%) scaleX(1);
+}
+
+body :focus:focus-visible {
+  outline: 2px solid var(--focus-ring, var(--primary));
+  outline-offset: 3px;
+}
+
+.hero-banner {
+  --focus-ring: white;
+}
+
+.hero-banner nav {
+  --focus-ring: var(--primary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

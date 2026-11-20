@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Explore Valora, a multi-asset wealth dashboard template with simulated market data and a virtual wallet." />
+  <title>VALORA — Wealth Dashboard</title>
+  <script type="module" src="/src/main.js"></script>
+</head>
+<body class="min-h-screen py-2 px-3 sm:px-5 flex flex-col items-center">
+
+  <!-- Main Dashboard Outer Shell (1:1 Proportions & Rounded Frame) -->
+  <div id="appShell" class="w-full max-w-[1280px] bg-white rounded-[32px] shadow-shell overflow-hidden border border-white/80 transition-all">
+
+    <!-- TOP HERO HEADER BANNER (Royal Indigo Theme) -->
+    <header class="hero-banner pt-4 px-4 sm:px-7 pb-6 lg:pb-0 text-white">
+
+      <!-- Floating White Pill Top Navigation Bar -->
+      <nav class="sticky top-3 z-30 bg-white text-[#8E96A0] rounded-[24px] h-[58px] px-5 sm:px-7 shadow-nav flex items-center justify-between gap-3">
+        <!-- Rebranded Custom Geometric Logo: VALORA -->
+        <button data-click="switchTab" data-arg="dashboard" class="flex items-center gap-2.5 group focus:outline-none shrink-0">
+          <span class="w-1.5 h-1.5 rounded-full bg-brand-600/40 group-hover:bg-brand-600 transition-colors"></span>
+          <div class="flex items-center gap-2">
+            <svg class="w-5 h-5 text-brand-600 transition-transform duration-300 group-hover:scale-110" viewBox="0 0 28 28" fill="none">
+              <path d="M4 6L14 23L24 6H19.2L14 15.2L8.8 6H4Z" fill="#4F46E5"/>
+              <path d="M11.5 6L14 10.5L16.5 6H11.5Z" fill="#0D9488"/>
+            </svg>
+            <span class="text-[14px] font-extrabold tracking-[0.22em] text-[#1E242B]">VALORA</span>
+          </div>
+          <span class="w-1.5 h-1.5 rounded-full bg-brand-600/40 group-hover:bg-brand-600 transition-colors"></span>
+        </button>
+
+        <!-- Desktop Navigation Links -->
+        <div id="desktopNavLinks" class="hidden lg:flex items-center gap-6 lg:gap-8 h-full text-[13.5px] font-medium">
+          <button data-tab="dashboard" data-click="switchTab" data-arg="dashboard" class="nav-tab-btn active hover:text-[#1E242B]">Dashboard</button>
+          <button data-tab="stocks" data-click="switchTab" data-arg="stocks" class="nav-tab-btn hover:text-[#1E242B]">Stocks</button>
+          <button data-tab="crypto" data-click="switchTab" data-arg="crypto" class="nav-tab-btn hover:text-[#1E242B]">Crypto</button>
+          <button data-tab="accounting" data-click="switchTab" data-arg="accounting" class="nav-tab-btn hover:text-[#1E242B]">Accounting</button>
+          <button data-tab="analytics" data-click="switchTab" data-arg="analytics" class="nav-tab-btn hover:text-[#1E242B]">Analytics</button>
+          <button data-tab="settings" data-click="switchTab" data-arg="settings" class="nav-tab-btn hover:text-[#1E242B]">Settings</button>
+        </div>
+
+        <!-- Subtle Utility Controls (Live Market Pulse, Currency Switcher, Quick Search) -->
+        <div class="hidden sm:flex items-center gap-2 shrink-0">
+          <!-- Live Market Ticker Toggle -->
+          <button id="liveTickerBtn" data-click="toggleLiveMarket" title="Aktifkan/Jeda Simulasi Harga Live" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 hover:bg-emerald-100 text-[11px] font-bold transition-colors">
+            <span id="liveTickerDot" class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+            <span id="liveTickerLabel">LIVE</span>
+          </button>
+
+          <!-- Currency Selector -->
+          <select id="currencySelector" data-change="changeCurrency" aria-label="Pilih Mata Uang" class="bg-[#F6F8FB] hover:bg-slate-200/70 text-[#1E242B] text-[11px] font-bold px-2.5 py-1 rounded-full border border-slate-200/80 focus:outline-none cursor-pointer">
+            <option value="USD">USD ($)</option>
+            <option value="IDR">IDR (Rp)</option>
+            <option value="EUR">EUR (€)</option>
+            <option value="SGD">SGD (S$)</option>
+          </select>
+
+          <!-- Quick Command Search Trigger -->
+          <button data-click="openCommandModal" title="Pencarian Cepat (Ctrl + K)" class="w-7 h-7 rounded-full bg-[#F6F8FB] hover:bg-brand-50 text-slate-600 hover:text-brand-600 flex items-center justify-center transition-colors">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Mobile Hamburger Button -->
+        <button id="mobileMenuBtn" data-click="toggleMobileDrawer" aria-label="Buka Menu" class="lg:hidden p-2 rounded-xl text-[#1E242B] hover:bg-slate-100 transition-colors">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </nav>
+
+      <!-- Hero Banner 3-Zone Row -->
+      <div class="max-w-[1140px] mx-auto pt-6 lg:pt-5 pb-2 lg:pb-0 grid grid-cols-1 lg:grid-cols-12 items-center gap-6 lg:gap-2">
+
+        <!-- Left Zone: Avatar + Greeting -->
+        <div class="lg:col-span-4 flex items-center justify-center lg:justify-start gap-4 lg:pb-8">
+          <div class="relative w-[52px] h-[52px] rounded-full p-0.5 bg-white/25 ring-2 ring-white/20 shrink-0 overflow-hidden shadow-md">
+            <img
+              id="headerAvatarImg"
+              src="/src/assets/demo-avatar.jpg"
+              alt="Elena Vance"
+              class="w-full h-full object-cover rounded-full"
+            />
+          </div>
+          <div class="text-left">
+            <p class="text-[13.5px] font-normal text-indigo-100/90 leading-snug">Good Morning,</p>
+            <h1 id="headerUserName" class="text-[17px] sm:text-[18px] font-semibold tracking-tight text-white leading-snug">Elena Vance</h1>
+          </div>
+        </div>
+
+        <!-- Center Zone: Sculpted Protruding Semicircular Strategy Dial -->
+        <div class="lg:col-span-4 flex justify-center relative lg:-mb-[56px]">
+          <button type="button" class="strategy-arc-wrapper select-none cursor-pointer group" data-click="cycleStrategy" title="Klik untuk mengganti profil strategi investasi">
+            <span class="strategy-arc-body">
+              <span class="strategy-arc-ring"></span>
+
+              <!-- Hand Holding Coin SVG Icon -->
+              <span class="mb-2 text-white/95 transition-transform duration-300 group-hover:-translate-y-0.5">
+                <svg class="w-9 h-9" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <ellipse cx="20.5" cy="9.5" rx="4.2" ry="2.4" transform="rotate(-24 20.5 9.5)" />
+                  <path d="M7 22.5H13.5L17.5 24.5H23.5C24.8 24.5 25.8 23.5 25.8 22.2C25.8 21.1 24.9 20.2 23.8 20.2H18.5" />
+                  <path d="M7 26.5H16.5L26.5 24.8C27.8 24.5 28.8 23.4 28.8 22.1" />
+                  <path d="M7 20.5V28" />
+                </svg>
+              </span>
+
+              <!-- Strategy Title -->
+              <span id="strategyTitle" class="text-[28px] sm:text-[31px] font-bold tracking-tight text-white leading-none">
+                Balanced
+              </span>
+              <span class="text-[11.5px] font-medium text-indigo-100/85 mt-1.5 tracking-wide">
+                Investing Strategy
+              </span>
+
+              <!-- Interactive Radial Dial Knob on the White Ring -->
+              <span id="strategyKnob" class="absolute w-3.5 h-3.5 rounded-full bg-white shadow-md ring-4 ring-indigo-300/40 transition-all duration-500"></span>
+            </span>
+          </button>
+        </div>
+
+        <!-- Right Zone: Wallet Badge + Total Balance -->
+        <div class="lg:col-span-4 flex items-center justify-center lg:justify-end gap-4 lg:pb-8">
+          <button data-click="openDepositModal" title="Tambah Dana ke Wallet" class="w-[50px] h-[50px] rounded-full bg-white/15 hover:bg-white/25 transition-all flex items-center justify-center text-white backdrop-blur-xs border border-white/15 cursor-pointer">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/>
+              <path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/>
+            </svg>
+          </button>
+          <div class="text-left">
+            <div class="flex items-center gap-2">
+              <p class="text-[10px] font-bold uppercase tracking-[0.16em] text-indigo-100/80">YOUR WALLET</p>
+              <span id="cashReservePill" class="text-[9.5px] font-semibold bg-white/15 text-white px-2 py-0.5 rounded-full">Cash: Rp2.79M</span>
+            </div>
+            <p id="headerWalletBalance" class="text-[30px] sm:text-[34px] font-light tracking-tight text-white leading-tight">Rp3.29M</p>
+          </div>
+        </div>
+
+      </div>
+    </header>
+
+    <!-- ===================================================================== -->
+    <!-- VIEW 1: DASHBOARD (1:1 PIXEL-PERFECT CLONE OF REFERENCE LAYOUT)       -->
+    <!-- ===================================================================== -->
+    <main id="view-dashboard" class="view-section px-5 sm:px-8 lg:px-10 pt-8 lg:pt-10 pb-9">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-7 lg:gap-0">
+
+        <!-- COLUMN 1 (LEFT ~30%) -->
+        <div class="lg:col-span-4 lg:pr-7 lg:border-r lg:border-[#F0F2F6] flex flex-col gap-5 animate-stagger-1">
+
+          <!-- 1A. Virtual Debit Card (Teal Gradient with Interactive Controls) -->
+          <div id="virtualCardBox" class="virtual-card-bg rounded-[22px] p-5 sm:p-6 text-white shadow-card-soft hover-lift select-none">
+            <div class="flex items-center justify-between mb-6">
+              <!-- Embossed EMV Chip SVG -->
+              <div class="flex items-center gap-2.5">
+                <svg class="w-9 h-7 text-white/75" viewBox="0 0 38 28" fill="none">
+                  <rect x="1" y="1" width="36" height="26" rx="5" stroke="currentColor" stroke-width="1.4"/>
+                  <path d="M13 1V27M25 1V27M1 10H13M25 10H37M1 18H13M25 18H37" stroke="currentColor" stroke-width="1.2"/>
+                </svg>
+                <span id="cardFrozenBadge" class="hidden px-2 py-0.5 rounded-full bg-white/20 text-[9.5px] font-extrabold uppercase tracking-wider">FROZEN</span>
+              </div>
+
+              <!-- Quick Card Action Icons: Copy, Reveal, Contactless -->
+              <div class="flex items-center gap-2">
+                <button data-click="copyCardNumber" title="Salin Nomor Kartu" class="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white/90 transition-colors">
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                  </svg>
+                </button>
+                <button data-click="toggleCardReveal" title="Tampilkan/Sembunyikan Nomor Kartu" class="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white/90 transition-colors">
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+                <svg class="w-5 h-5 text-white/85" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <path d="M8.5 14.5A4 4 0 0 0 8.5 9.5"/>
+                  <path d="M11.5 17A7.5 7.5 0 0 0 11.5 7"/>
+                  <path d="M14.5 19.5A11 11 0 0 0 14.5 4.5"/>
+                </svg>
+              </div>
+            </div>
+
+            <!-- Masked / Revealed Card Number -->
+            <div data-click="copyCardNumber" title="Klik untuk menyalin nomor kartu" id="virtualCardNumber" class="font-mono text-[16px] sm:text-[17px] tracking-[0.22em] font-medium text-white/95 mb-6 cursor-pointer hover:text-white">
+              •••• &nbsp;•••• &nbsp;•••• &nbsp;5678
+            </div>
+
+            <!-- Card Footer -->
+            <div class="flex items-end justify-between">
+              <div class="flex items-center gap-6">
+                <div>
+                  <p id="cardHolderDisplay" class="text-[11.5px] font-medium text-white/90">Elena Vance</p>
+                </div>
+                <div>
+                  <p class="text-[11.5px] font-medium text-white/85">09/29</p>
+                </div>
+              </div>
+              <!-- Overlapping Dual Circles Network Emblem -->
+              <div class="flex items-center">
+                <span class="w-6 h-6 rounded-full bg-white/35 backdrop-blur-xs"></span>
+                <span class="w-6 h-6 rounded-full bg-white/55 -ml-2.5 backdrop-blur-xs"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 1B. Amber Gold Promo Action Card ("Load more funds and keep trading.") -->
+          <div class="promo-card-bg rounded-[22px] p-5 text-white shadow-card-soft hover-lift flex items-center gap-4">
+            <div class="relative w-16 h-16 shrink-0 flex items-center justify-center">
+              <div class="w-14 h-14 rounded-2xl bg-amber-900/20 flex items-center justify-center">
+                <svg class="w-10 h-10 text-amber-100" viewBox="0 0 40 40" fill="none">
+                  <rect x="11" y="6" width="18" height="4" rx="2" fill="#FDE68A"/>
+                  <rect x="8" y="11" width="24" height="23" rx="6" fill="#FCD34D" fill-opacity="0.45" stroke="#FEF3C7" stroke-width="1.5"/>
+                  <circle cx="20" cy="23" r="6" fill="#FBBF24" stroke="#FEF3C7" stroke-width="1.5"/>
+                  <text x="20" y="26" font-size="8" font-weight="bold" fill="#78350F" text-anchor="middle">$</text>
+                </svg>
+              </div>
+              <button data-click="openDepositModal" class="absolute -top-0.5 -right-0.5 w-6 h-6 rounded-full bg-white text-amberpromo-600 font-bold text-sm shadow flex items-center justify-center hover:scale-110 transition-transform">
+                +
+              </button>
+            </div>
+
+            <div class="flex-1 min-w-0">
+              <p class="text-[13.5px] font-medium leading-[1.38] text-white mb-2.5">
+                Load more funds<br/>and keep trading.
+              </p>
+              <button data-click="openDepositModal" class="inline-flex items-center gap-2 text-[10.5px] font-extrabold uppercase tracking-[0.14em] text-amber-950/85 hover:text-white transition-colors group">
+                <span>ADD FUNDS</span>
+                <span class="transition-transform duration-200 group-hover:translate-x-1">⟶</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 1C. Quick-Add Asset Category Mini-Cards (ETFs | Bonds | NFTs) -->
+          <div class="grid grid-cols-3 pt-2 divide-x divide-[#F0F2F6]">
+            <!-- ETFs -->
+            <div class="flex flex-col items-center justify-between px-2 py-2 group">
+              <div class="h-11 flex items-center justify-center mb-1.5 transition-transform duration-200 group-hover:-translate-y-0.5">
+                <svg class="w-10 h-10" viewBox="0 0 40 40" fill="none">
+                  <ellipse cx="15" cy="14" rx="5.5" ry="3.2" transform="rotate(-25 15 14)" fill="#E0E7FF" stroke="#4F46E5" stroke-width="1.5"/>
+                  <ellipse cx="25" cy="18" rx="5.5" ry="3.2" transform="rotate(20 25 18)" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5"/>
+                  <ellipse cx="18" cy="26" rx="5.5" ry="3.2" transform="rotate(-15 18 26)" fill="#CCFBF1" stroke="#0D9488" stroke-width="1.5"/>
+                </svg>
+              </div>
+              <span class="text-[12.5px] font-semibold text-[#1E242B] mb-3">ETFs</span>
+              <button data-click="addAssetInCategory" data-arg="ETFs" title="Tambah ETF Baru" class="w-7 h-7 rounded-full bg-brand-50 hover:bg-brand-600 text-brand-600 hover:text-white flex items-center justify-center text-sm font-bold transition-all">
+                +
+              </button>
+            </div>
+
+            <!-- Bonds -->
+            <div class="flex flex-col items-center justify-between px-2 py-2 group">
+              <div class="h-11 flex items-center justify-center mb-1.5 transition-transform duration-200 group-hover:-translate-y-0.5">
+                <svg class="w-10 h-10" viewBox="0 0 40 40" fill="none">
+                  <rect x="8" y="14" width="22" height="13" rx="2.5" transform="rotate(-12 8 14)" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5"/>
+                  <rect x="10" y="17" width="22" height="13" rx="2.5" fill="#FFFFFF" stroke="#4F46E5" stroke-width="1.5"/>
+                  <circle cx="21" cy="23.5" r="2.8" fill="#E0E7FF" stroke="#4F46E5" stroke-width="1.3"/>
+                </svg>
+              </div>
+              <span class="text-[12.5px] font-semibold text-[#1E242B] mb-3">Bonds</span>
+              <button data-click="addAssetInCategory" data-arg="Bonds" title="Tambah Bonds Baru" class="w-7 h-7 rounded-full bg-brand-50 hover:bg-brand-600 text-brand-600 hover:text-white flex items-center justify-center text-sm font-bold transition-all">
+                +
+              </button>
+            </div>
+
+            <!-- NFTs -->
+            <div class="flex flex-col items-center justify-between px-2 py-2 group">
+              <div class="h-11 flex items-center justify-center mb-1.5 transition-transform duration-200 group-hover:-translate-y-0.5">
+                <svg class="w-10 h-10" viewBox="0 0 40 40" fill="none">
+                  <rect x="9" y="10" width="22" height="19" rx="3" fill="#EEF2FF" stroke="#4F46E5" stroke-width="1.5"/>
+                  <circle cx="15.5" cy="16" r="2.2" fill="#F59E0B"/>
+                  <path d="M10 26L16.5 20L21 24L25 19.5L30 26H10Z" fill="#C7D2FE" stroke="#4F46E5" stroke-width="1.3" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <span class="text-[12.5px] font-semibold text-[#1E242B] mb-3">NFTs</span>
+              <button data-click="addAssetInCategory" data-arg="NFTs" title="Tambah NFT Baru" class="w-7 h-7 rounded-full bg-brand-50 hover:bg-brand-600 text-brand-600 hover:text-white flex items-center justify-center text-sm font-bold transition-all">
+                +
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- COLUMN 2 (CENTER ~36%) -->
+        <div class="lg:col-span-4 lg:px-7 lg:pt-12 lg:border-r lg:border-[#F0F2F6] flex flex-col justify-between gap-6 animate-stagger-2">
+
+          <!-- 2A. Invested Value Smooth Area Chart with Interactive Timeframes -->
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <h2 class="text-[15.5px] font-bold text-[#1E242B]">Invested Value</h2>
+              <div class="flex items-center gap-1.5">
+                <span id="investedHoverBadge" class="text-[10.5px] font-bold text-brand-600 bg-brand-50 px-2 py-0.5 rounded-full opacity-0 transition-opacity">
+                  $26.8k
+                </span>
+                <div class="inline-flex rounded-lg bg-[#F6F8FB] p-0.5 text-[10px] font-bold text-slate-500">
+                  <button data-click="setChartRange" data-arg="1M" data-range="1M" class="range-btn px-2 py-0.5 rounded-md transition-colors">1M</button>
+                  <button data-click="setChartRange" data-arg="6M" data-range="6M" class="range-btn px-2 py-0.5 rounded-md bg-white text-brand-600 shadow-2xs transition-colors">6M</button>
+                  <button data-click="setChartRange" data-arg="1Y" data-range="1Y" class="range-btn px-2 py-0.5 rounded-md transition-colors">1Y</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="relative w-full h-[155px] select-none" id="investedChartContainer">
+              <!-- Interactive SVG Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- 2B. Transactions Pill List -->
+          <div>
+            <div class="flex items-center justify-between mb-3.5">
+              <h2 class="text-[15.5px] font-bold text-[#1E242B]">Transactions</h2>
+              <button data-click="switchTab" data-arg="accounting" title="Lihat Semua Transaksi" class="text-[#1E242B] hover:text-brand-600 transition-transform hover:translate-x-1 text-base font-semibold">
+                ⟶
+              </button>
+            </div>
+
+            <div id="dashboardTransactionsList" class="flex flex-col gap-3">
+              <!-- Populated dynamically from state -->
+            </div>
+          </div>
+
+        </div>
+
+        <!-- COLUMN 3 (RIGHT ~34%) -->
+        <div class="lg:col-span-4 lg:pl-7 flex flex-col justify-between gap-6 animate-stagger-3">
+
+          <!-- 3A. Top Split Sub-Grid: Your Assets (Radar Chart) | Stocks Summary -->
+          <div class="grid grid-cols-2 pb-5 border-b border-[#F0F2F6] divide-x divide-[#F0F2F6]">
+
+            <!-- Left Sub-Card: Your Assets Radar -->
+            <div class="pr-3.5 flex flex-col justify-between">
+              <div class="flex items-start justify-between mb-2">
+                <h2 class="text-[15px] font-bold text-[#1E242B] leading-tight">Your<br/>Assets</h2>
+                <button data-click="switchTab" data-arg="analytics" title="Detail Alokasi Aset" class="text-[#1E242B] hover:text-brand-600 transition-transform hover:translate-x-1 text-base font-semibold">
+                  ⟶
+                </button>
+              </div>
+              <div id="radarChartContainer" class="w-full flex items-center justify-center py-1">
+                <!-- Hexagonal Radar SVG Rendered via JS -->
+              </div>
+            </div>
+
+            <!-- Right Sub-Card: Stocks Summary -->
+            <div data-click="switchTab" data-arg="stocks" class="pl-4 flex flex-col items-center justify-between text-center cursor-pointer group">
+              <div class="w-full text-left flex items-center justify-between">
+                <h2 class="text-[15px] font-bold text-[#1E242B] group-hover:text-brand-600 transition-colors">Stocks</h2>
+              </div>
+
+              <!-- Pastel Icon Badge -->
+              <div class="w-11 h-11 rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center my-2 group-hover:scale-105 transition-transform">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="7" width="20" height="14" rx="2"/>
+                  <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
+                  <path d="M12 12v4"/>
+                  <path d="M10 14h4"/>
+                </svg>
+              </div>
+
+              <!-- Stocks Total Figure -->
+              <div id="dashboardStocksTotal" class="text-[30px] font-light tracking-tight text-[#1E242B] leading-none my-1">
+                $12.5k
+              </div>
+
+              <!-- Monthly Growth Indicator -->
+              <div class="flex items-center justify-center gap-1.5 text-[11.5px] mt-1">
+                <svg class="w-3.5 h-3.5 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/>
+                  <polyline points="16 7 22 7 22 13"/>
+                </svg>
+                <span class="font-bold text-emerald-500">+12.3%</span>
+                <span class="text-[#9CA3AF]">/month</span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- 3B. Bottom Section: Top Gainers with Sparklines (Clickable to Open Trade Drawer) -->
+          <div>
+            <div class="flex items-center justify-between mb-3.5">
+              <h2 class="text-[15.5px] font-bold text-[#1E242B]">Top Gainers</h2>
+              <button data-click="switchTab" data-arg="stocks" title="Kelola Semua Saham & Aset" class="text-[#1E242B] hover:text-brand-600 transition-transform hover:translate-x-1 text-base font-semibold">
+                ⟶
+              </button>
+            </div>
+
+            <div id="dashboardTopGainers" class="flex flex-col divide-y divide-[#F4F6F9]">
+              <!-- Populated dynamically with sparkline SVGs -->
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </main>
+
+    <!-- ===================================================================== -->
+    <!-- VIEW 2 & 3: STOCKS / CRYPTO PORTFOLIO CRUD VIEW                       -->
+    <!-- ===================================================================== -->
+    <section id="view-portfolio" class="view-section hidden px-5 sm:px-8 lg:px-10 pt-8 lg:pt-14 pb-10">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        <div>
+          <span id="portfolioEyebrow" class="text-[11px] font-bold uppercase tracking-[0.16em] text-brand-600">MULTI-ASSET HOLDINGS</span>
+          <h2 id="portfolioPageTitle" class="text-2xl font-bold text-[#1E242B]">Stocks & Equities Portfolio</h2>
+        </div>
+        <div class="flex flex-wrap items-center gap-2.5">
+          <button id="bulkDeleteAssetsBtn" data-click="bulkDeleteAssets" class="hidden px-3.5 py-2 rounded-xl bg-rose-50 text-rose-600 hover:bg-rose-100 text-xs font-bold transition-colors">
+            Hapus Terpilih (<span id="selectedAssetsCount">0</span>)
+          </button>
+          <button data-click="simulateMarketTick" class="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-tealcard-50 hover:bg-tealcard-100 text-tealcard-700 text-xs font-bold transition-colors">
+            <span>⚡ Market Tick</span>
+          </button>
+          <button data-click="openAssetModal" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold shadow-sm transition-all">
+            <span>+ Tambah Aset</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Filter, Search & Sort Controls -->
+      <div class="bg-[#F6F8FB] p-4 rounded-2xl mb-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div class="relative">
+          <input
+            type="text"
+            id="assetSearchInput"
+            data-input="renderPortfolioTable"
+            placeholder="Cari ticker atau nama aset..."
+            class="w-full pl-9 pr-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs font-medium text-[#1E242B] focus:outline-none focus:border-brand-600"
+          />
+          <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+          </svg>
+        </div>
+
+        <select id="assetCategoryFilter" data-change="renderPortfolioTable" class="px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-[#1E242B] focus:outline-none focus:border-brand-600">
+          <option value="ALL">Semua Kategori Aset</option>
+          <option value="Stocks">Stocks</option>
+          <option value="Crypto">Crypto</option>
+          <option value="ETFs">ETFs</option>
+          <option value="Bonds">Bonds</option>
+          <option value="NFTs">NFTs</option>
+        </select>
+
+        <select id="assetSortSelect" data-change="renderPortfolioTable" class="px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-[#1E242B] focus:outline-none focus:border-brand-600">
+          <option value="value_desc">Urutkan: Nilai Tertinggi</option>
+          <option value="value_asc">Urutkan: Nilai Terendah</option>
+          <option value="change_desc">Urutkan: Gainers Tertinggi (%)</option>
+          <option value="name_asc">Urutkan: Nama (A - Z)</option>
+        </select>
+
+        <div class="flex items-center justify-between sm:justify-end gap-2 text-xs text-slate-500 font-medium px-2">
+          <span>Total Nilai Terfilter:</span>
+          <span id="filteredPortfolioSum" class="text-sm font-bold text-brand-600">$0.00</span>
+        </div>
+      </div>
+
+      <!-- Responsive Horizontal Scroll Table -->
+      <div class="overflow-x-auto rounded-2xl border border-[#EEF1F6]">
+        <table class="w-full text-left border-collapse min-w-[780px]">
+          <thead>
+            <tr class="bg-[#F8FAFC] border-b border-[#EEF1F6] text-[11px] font-bold uppercase tracking-wider text-[#8E96A0]">
+              <th class="py-3.5 px-4 w-10">
+                <input type="checkbox" id="selectAllAssetsCheckbox" data-change="toggleSelectAllAssets" class="rounded border-slate-300 text-brand-600 focus:ring-brand-600" />
+              </th>
+              <th class="py-3.5 px-4">Aset & Ticker</th>
+              <th class="py-3.5 px-4">Kategori</th>
+              <th class="py-3.5 px-4 text-right">Harga Unit</th>
+              <th class="py-3.5 px-4 text-right">Kepemilikan</th>
+              <th class="py-3.5 px-4 text-right">Total Nilai</th>
+              <th class="py-3.5 px-4 text-right">24h Change</th>
+              <th class="py-3.5 px-4 text-center">Trend</th>
+              <th class="py-3.5 px-4 text-right">Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="portfolioTableBody" class="divide-y divide-[#F1F4F8] text-xs">
+            <!-- Rendered via JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination Controls -->
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4 text-xs text-slate-500">
+        <p id="assetPaginationInfo">Menampilkan 0 dari 0 aset</p>
+        <div id="assetPaginationButtons" class="flex items-center gap-1.5"></div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- VIEW 4: ACCOUNTING & TRANSACTIONS LEDGER CRUD VIEW                    -->
+    <!-- ===================================================================== -->
+    <section id="view-accounting" class="view-section hidden px-5 sm:px-8 lg:px-10 pt-8 lg:pt-14 pb-10">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        <div>
+          <span class="text-[11px] font-bold uppercase tracking-[0.16em] text-tealcard-600">CASHFLOW & LEDGER</span>
+          <h2 class="text-2xl font-bold text-[#1E242B]">Accounting & Transactions</h2>
+        </div>
+        <div class="flex flex-wrap items-center gap-2.5">
+          <button id="bulkDeleteTxBtn" data-click="bulkDeleteTransactions" class="hidden px-3.5 py-2 rounded-xl bg-rose-50 text-rose-600 hover:bg-rose-100 text-xs font-bold transition-colors">
+            Hapus Terpilih (<span id="selectedTxCount">0</span>)
+          </button>
+          <button data-click="exportTransactionsCSV" class="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-[#F6F8FB] hover:bg-slate-200/70 text-[#1E242B] text-xs font-bold transition-colors">
+            <span>↓ Export CSV</span>
+          </button>
+          <button data-click="openTransactionModal" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold shadow-sm transition-all">
+            <span>+ Catat Transaksi</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Search & Filter Bar -->
+      <div class="bg-[#F6F8FB] p-4 rounded-2xl mb-5 grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div class="relative">
+          <input
+            type="text"
+            id="txSearchInput"
+            data-input="renderTransactionsTable"
+            placeholder="Cari keterangan transaksi..."
+            class="w-full pl-9 pr-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs font-medium text-[#1E242B] focus:outline-none focus:border-brand-600"
+          />
+          <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+          </svg>
+        </div>
+
+        <select id="txTypeFilter" data-change="renderTransactionsTable" class="px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-[#1E242B] focus:outline-none focus:border-brand-600">
+          <option value="ALL">Semua Jenis Arus Kas</option>
+          <option value="deposit">Deposit / Funds Loaded (+)</option>
+          <option value="withdraw">Withdrawal / Funds Withdraw (-)</option>
+          <option value="trade">Eksekusi Order Aset (Buy/Sell)</option>
+        </select>
+
+        <select id="txSortSelect" data-change="renderTransactionsTable" class="px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-[#1E242B] focus:outline-none focus:border-brand-600">
+          <option value="newest">Urutkan: Terbaru</option>
+          <option value="amount_desc">Urutkan: Nominal Terbesar</option>
+          <option value="amount_asc">Urutkan: Nominal Terkecil</option>
+        </select>
+      </div>
+
+      <!-- Transactions Data Table -->
+      <div class="overflow-x-auto rounded-2xl border border-[#EEF1F6]">
+        <table class="w-full text-left border-collapse min-w-[660px]">
+          <thead>
+            <tr class="bg-[#F8FAFC] border-b border-[#EEF1F6] text-[11px] font-bold uppercase tracking-wider text-[#8E96A0]">
+              <th class="py-3.5 px-4 w-10">
+                <input type="checkbox" id="selectAllTxCheckbox" data-change="toggleSelectAllTx" class="rounded border-slate-300 text-brand-600 focus:ring-brand-600" />
+              </th>
+              <th class="py-3.5 px-4">Keterangan</th>
+              <th class="py-3.5 px-4">Tanggal</th>
+              <th class="py-3.5 px-4">Tipe</th>
+              <th class="py-3.5 px-4 text-right">Nominal</th>
+              <th class="py-3.5 px-4 text-right">Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="transactionsTableBody" class="divide-y divide-[#F1F4F8] text-xs">
+            <!-- Rendered via JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4 text-xs text-slate-500">
+        <p id="txPaginationInfo">Menampilkan 0 dari 0 transaksi</p>
+        <div id="txPaginationButtons" class="flex items-center gap-1.5"></div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- VIEW 5: ANALYTICS & AUTO-REBALANCE SIMULATOR VIEW                     -->
+    <!-- ===================================================================== -->
+    <section id="view-analytics" class="view-section hidden px-5 sm:px-8 lg:px-10 pt-8 lg:pt-14 pb-10">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        <div>
+          <span class="text-[11px] font-bold uppercase tracking-[0.16em] text-brand-600">PORTFOLIO INTELLIGENCE</span>
+          <h2 class="text-2xl font-bold text-[#1E242B]">Asset Allocation & Auto-Rebalance</h2>
+        </div>
+        <button data-click="autoRebalancePortfolio" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-tealcard-600 hover:bg-tealcard-700 text-white text-xs font-bold shadow-sm transition-all">
+          <span>⚖️ Auto-Rebalance Sesuai Strategi</span>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="bg-[#F6F8FB] rounded-2xl p-6 flex flex-col justify-between">
+          <div>
+            <h3 class="text-sm font-bold text-[#1E242B] mb-1">Distribusi Kelas Aset</h3>
+            <p class="text-xs text-slate-500 mb-4">Proporsi real-time seluruh aset aktif di portofolio Valora Anda.</p>
+          </div>
+          <div id="analyticsAllocationBars" class="space-y-3.5">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+
+        <div class="lg:col-span-2 bg-[#F6F8FB] rounded-2xl p-6 flex flex-col justify-between">
+          <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+            <div>
+              <h3 class="text-sm font-bold text-[#1E242B]">Simulasi Proyeksi 5 Tahun Berdasarkan Strategi</h3>
+              <p class="text-xs text-slate-500">Pilih profil risiko atau jalankan Auto-Rebalance untuk menyesuaikan unit kepemilikan.</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <button data-click="setStrategy" data-arg="Conservative" aria-pressed="false" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-white text-slate-700 hover:bg-brand-600 hover:text-white border border-slate-200 aria-pressed:bg-brand-600 aria-pressed:text-white transition-colors">Conservative (7%)</button>
+              <button data-click="setStrategy" data-arg="Balanced" aria-pressed="true" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-white text-slate-700 hover:bg-brand-600 hover:text-white border border-slate-200 aria-pressed:bg-brand-600 aria-pressed:text-white transition-colors">Balanced (12%)</button>
+              <button data-click="setStrategy" data-arg="Aggressive" aria-pressed="false" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-white text-slate-700 hover:bg-brand-600 hover:text-white border border-slate-200 aria-pressed:bg-brand-600 aria-pressed:text-white transition-colors">Aggressive (19%)</button>
+            </div>
+          </div>
+
+          <div id="analyticsProjectionSummary" class="grid grid-cols-3 gap-3 mb-4">
+            <!-- Populated dynamically -->
+          </div>
+
+          <div class="bg-white rounded-xl p-4 border border-slate-100 text-xs text-slate-600 leading-relaxed">
+            Strategi aktif Anda saat ini adalah <strong id="analyticsActiveStrategyText" class="text-brand-600">Balanced</strong>. Klik tombol <strong>Auto-Rebalance Sesuai Strategi</strong> di kanan atas untuk menata ulang unit aset secara otomatis ke target bobot ideal.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- VIEW 6: SETTINGS, VIRTUAL CARD SECURITY & BACKUP VIEW                 -->
+    <!-- ===================================================================== -->
+    <section id="view-settings" class="view-section hidden px-5 sm:px-8 lg:px-10 pt-8 lg:pt-14 pb-10">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Profile Form -->
+        <div>
+          <span class="text-[11px] font-bold uppercase tracking-[0.16em] text-brand-600">WORKSPACE PREFERENCES</span>
+          <h2 class="text-2xl font-bold text-[#1E242B] mb-5">Account & Profile Settings</h2>
+
+          <form data-submit="saveProfileSettings" class="bg-[#F6F8FB] rounded-2xl p-6 space-y-4">
+            <div>
+              <label class="block text-xs font-bold text-[#1E242B] mb-1.5">Nama Lengkap Pemilik Akun</label>
+              <input type="text" id="settingsNameInput" required class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-brand-600" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-[#1E242B] mb-1.5">URL Foto Profil (HD)</label>
+              <input type="url" id="settingsAvatarInput" required class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-brand-600" />
+            </div>
+
+            <div class="pt-2 flex flex-wrap items-center justify-between gap-3">
+              <button type="submit" class="px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold transition-colors">
+                Simpan Perubahan Profil
+              </button>
+              <button type="button" data-click="resetDemoData" class="px-4 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold transition-colors">
+                Reset Data Awal
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Virtual Card Controls & JSON Backup -->
+        <div>
+          <span class="text-[11px] font-bold uppercase tracking-[0.16em] text-tealcard-600">CARD & DATA SECURITY</span>
+          <h2 class="text-2xl font-bold text-[#1E242B] mb-5">Virtual Card & Backup</h2>
+
+          <div class="bg-[#F6F8FB] rounded-2xl p-6 space-y-5">
+            <div class="flex items-center justify-between bg-white p-4 rounded-xl border border-slate-100">
+              <div>
+                <p class="text-xs font-bold text-[#1E242B]">Status Kartu Virtual (•••• 5678)</p>
+                <p id="cardFreezeDesc" class="text-[11px] text-slate-500 mt-0.5">Kartu aktif dan siap untuk pendanaan maupun penarikan.</p>
+              </div>
+              <button id="toggleFreezeBtn" data-click="toggleCardFreeze" class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-colors">
+                Freeze Card
+              </button>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-4 rounded-xl border border-slate-100">
+              <div>
+                <p class="text-xs font-bold text-[#1E242B]">Cadangkan Portofolio (JSON)</p>
+                <p class="text-[11px] text-slate-500 mt-0.5">Unduh seluruh data aset & riwayat transaksi Anda.</p>
+              </div>
+              <button data-click="exportStateJSON" class="px-4 py-2 rounded-xl bg-brand-50 hover:bg-brand-100 text-brand-600 text-xs font-bold transition-colors">
+                ↓ Download JSON
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Subtle Brand Footer -->
+    <footer class="px-6 sm:px-10 py-4 border-t border-[#F2F4F8] flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-[#9CA3AF]">
+      <span>Valora demo · Simulated market data</span>
+      <div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+        <button data-click="switchTab" data-arg="dashboard" class="hover:text-brand-600 transition-colors">Overview</button>
+        <button data-click="switchTab" data-arg="accounting" class="hover:text-brand-600 transition-colors">Ledger</button>
+        <button data-click="openCommandModal" class="hover:text-brand-600 transition-colors">Quick Search (Ctrl+K)</button>
+        <button data-click="resetDemoData" class="hover:text-rose-500 transition-colors">Reset Data</button>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- SLIDE-OVER DRAWER: ASSET INSPECTOR & INSTANT BUY/SELL ORDER           -->
+  <!-- ===================================================================== -->
+  <div id="assetTradeDrawer" class="fixed inset-0 z-50 hidden">
+    <div data-click="closeAssetTradeDrawer" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs"></div>
+    <div class="fixed top-0 right-0 bottom-0 w-full max-w-md bg-white shadow-2xl p-6 flex flex-col justify-between z-10 overflow-y-auto">
+      <div>
+        <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+          <div id="drawerAssetHeader" class="flex items-center gap-3"></div>
+          <button data-click="closeAssetTradeDrawer" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center text-sm">✕</button>
+        </div>
+
+        <!-- Live Price & Holding Position -->
+        <div class="grid grid-cols-2 gap-3 my-5">
+          <div class="bg-[#F6F8FB] p-3.5 rounded-2xl">
+            <p class="text-[10.5px] font-bold uppercase text-slate-400">Harga Pasar Unit</p>
+            <p id="drawerUnitPrice" class="text-xl font-extrabold text-[#1E242B] mt-0.5">$0.00</p>
+            <p id="drawerPriceChange" class="text-xs font-bold text-emerald-500 mt-0.5">+0.0%</p>
+          </div>
+          <div class="bg-[#F6F8FB] p-3.5 rounded-2xl">
+            <p class="text-[10.5px] font-bold uppercase text-slate-400">Posisi Anda</p>
+            <p id="drawerHoldingValue" class="text-xl font-extrabold text-brand-600 mt-0.5">$0.00</p>
+            <p id="drawerHoldingQty" class="text-xs font-medium text-slate-500 mt-0.5">0 Unit</p>
+          </div>
+        </div>
+
+        <!-- Enlarged Sparkline Preview -->
+        <div class="bg-brand-50/50 border border-brand-100 rounded-2xl p-4 mb-5">
+          <div class="flex items-center justify-between text-xs font-bold text-brand-700 mb-2">
+            <span>Intraday Momentum Trend</span>
+            <span id="drawerCategoryBadge" class="px-2 py-0.5 rounded-full bg-white text-[10px]">Stocks</span>
+          </div>
+          <div id="drawerChartPreview" class="w-full h-16 flex items-center justify-center"></div>
+        </div>
+
+        <!-- Instant Buy / Sell Execution Form -->
+        <form data-submit="executeInstantTrade" class="bg-[#F6F8FB] p-4 rounded-2xl space-y-3.5 text-xs">
+          <div class="grid grid-cols-2 gap-2 bg-white p-1 rounded-xl border border-slate-200">
+            <button type="button" id="tradeSideBuyBtn" data-click="setTradeSide" data-arg="buy" class="py-2 rounded-lg font-bold bg-emerald-500 text-white transition-colors">BUY ASET</button>
+            <button type="button" id="tradeSideSellBtn" data-click="setTradeSide" data-arg="sell" class="py-2 rounded-lg font-bold text-slate-600 hover:bg-slate-100 transition-colors">SELL ASET</button>
+          </div>
+
+          <div>
+            <div class="flex justify-between font-bold text-[#1E242B] mb-1">
+              <label>Jumlah Unit</label>
+              <span id="drawerAvailableBalanceHint" class="text-[11px] font-medium text-slate-500">Cash: $0</span>
+            </div>
+            <input type="number" step="0.01" min="0.01" id="tradeQtyInput" data-input="updateTradeEstimate" required placeholder="Masukkan jumlah unit..." class="w-full px-3.5 py-2.5 bg-white rounded-xl border border-slate-200 font-bold focus:outline-none focus:border-brand-600" />
+          </div>
+
+          <div class="flex items-center justify-between pt-1 border-t border-slate-200/80">
+            <span class="font-medium text-slate-500">Estimasi Total Order:</span>
+            <span id="tradeEstimatedTotal" class="text-sm font-extrabold text-[#1E242B]">$0.00</span>
+          </div>
+
+          <button type="submit" id="executeTradeSubmitBtn" class="w-full py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold shadow-sm transition-colors">
+            Eksekusi Order Sekarang
+          </button>
+        </form>
+      </div>
+
+      <div class="pt-4 border-t border-slate-100 flex items-center justify-between text-xs mt-5">
+        <button id="drawerEditMetaBtn" class="text-slate-600 hover:text-brand-600 font-bold">Edit Detail Aset</button>
+        <button id="drawerDeleteAssetBtn" class="text-rose-600 hover:text-rose-700 font-bold">Hapus Aset</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- GLOBAL COMMAND SEARCH MODAL (CTRL + K)                                -->
+  <!-- ===================================================================== -->
+  <div id="commandModal" class="fixed inset-0 z-50 hidden items-start justify-center pt-20 p-4">
+    <div data-click="closeModal" data-arg="commandModal" class="fixed inset-0 bg-slate-900/45 backdrop-blur-xs"></div>
+    <div class="relative bg-white rounded-3xl w-full max-w-lg p-4 shadow-2xl z-10 animate-stagger-1">
+      <div class="flex items-center gap-3 px-3 pb-3 border-b border-slate-100">
+        <svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+        </svg>
+        <input type="text" id="commandSearchInput" data-input="renderCommandResults" placeholder="Ketik nama aset, ticker (SPOT, ETH), transaksi, atau menu..." class="w-full text-xs font-medium text-[#1E242B] focus:outline-none" />
+        <button data-click="closeModal" data-arg="commandModal" class="text-[10px] font-bold px-2 py-1 rounded bg-slate-100 text-slate-500">ESC</button>
+      </div>
+      <div id="commandResultsList" class="max-h-72 overflow-y-auto divide-y divide-slate-50 mt-2 text-xs"></div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MOBILE NAVIGATION DRAWER                                              -->
+  <!-- ===================================================================== -->
+  <div id="mobileDrawer" class="fixed inset-0 z-50 hidden">
+    <div data-click="toggleMobileDrawer" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs"></div>
+    <div class="fixed top-0 right-0 bottom-0 w-72 bg-white shadow-2xl p-6 flex flex-col justify-between z-10">
+      <div>
+        <div class="flex items-center justify-between pb-5 border-b border-slate-100">
+          <span class="text-sm font-extrabold tracking-[0.2em] text-[#1E242B]">• VALORA •</span>
+          <button data-click="toggleMobileDrawer" class="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100">✕</button>
+        </div>
+        <div class="mt-5 flex flex-col gap-1.5 text-sm font-semibold text-slate-600">
+          <button data-click="navigateFromDrawer" data-arg="dashboard" class="text-left px-3.5 py-2.5 rounded-xl hover:bg-brand-50 hover:text-brand-600">Dashboard</button>
+          <button data-click="navigateFromDrawer" data-arg="stocks" class="text-left px-3.5 py-2.5 rounded-xl hover:bg-brand-50 hover:text-brand-600">Stocks</button>
+          <button data-click="navigateFromDrawer" data-arg="crypto" class="text-left px-3.5 py-2.5 rounded-xl hover:bg-brand-50 hover:text-brand-600">Crypto</button>
+          <button data-click="navigateFromDrawer" data-arg="accounting" class="text-left px-3.5 py-2.5 rounded-xl hover:bg-brand-50 hover:text-brand-600">Accounting</button>
+          <button data-click="navigateFromDrawer" data-arg="analytics" class="text-left px-3.5 py-2.5 rounded-xl hover:bg-brand-50 hover:text-brand-600">Analytics</button>
+          <button data-click="navigateFromDrawer" data-arg="settings" class="text-left px-3.5 py-2.5 rounded-xl hover:bg-brand-50 hover:text-brand-600">Settings</button>
+        </div>
+      </div>
+      <div class="space-y-2">
+        <button data-click="toggleLiveMarket" class="w-full py-2.5 rounded-xl bg-emerald-50 text-emerald-700 text-xs font-bold">
+          Toggle Live Market Ticker
+        </button>
+        <button data-click="resetFromDrawer" class="w-full py-2.5 rounded-xl bg-rose-50 text-rose-600 text-xs font-bold">
+          Reset Data Awal
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL 1: CREATE / UPDATE ASSET                                        -->
+  <!-- ===================================================================== -->
+  <div id="assetModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+    <div data-click="closeModal" data-arg="assetModal" class="fixed inset-0 bg-slate-900/45 backdrop-blur-xs"></div>
+    <div class="relative bg-white rounded-3xl w-full max-w-md p-6 shadow-2xl z-10 animate-stagger-1">
+      <div class="flex items-center justify-between mb-4">
+        <h3 id="assetModalTitle" class="text-lg font-bold text-[#1E242B]">Tambah Aset Portofolio</h3>
+        <button data-click="closeModal" data-arg="assetModal" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center text-sm">✕</button>
+      </div>
+
+      <form id="assetForm" data-submit="handleAssetSubmit" class="space-y-3.5 text-xs">
+        <input type="hidden" id="assetIdField" />
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-[#1E242B] mb-1">Ticker / Simbol *</label>
+            <input type="text" id="assetTickerField" required placeholder="misal: NVDA" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 uppercase font-bold focus:outline-none focus:border-brand-600" />
+          </div>
+          <div>
+            <label class="block font-bold text-[#1E242B] mb-1">Kategori *</label>
+            <select id="assetCategoryField" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-semibold focus:outline-none focus:border-brand-600">
+              <option value="Stocks">Stocks</option>
+              <option value="Crypto">Crypto</option>
+              <option value="ETFs">ETFs</option>
+              <option value="Bonds">Bonds</option>
+              <option value="NFTs">NFTs</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-[#1E242B] mb-1">Nama Perusahaan / Aset *</label>
+          <input type="text" id="assetNameField" required placeholder="misal: NVIDIA Corporation" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-medium focus:outline-none focus:border-brand-600" />
+        </div>
+
+        <div class="grid grid-cols-3 gap-3">
+          <div>
+            <label class="block font-bold text-[#1E242B] mb-1">Harga (USD) *</label>
+            <input type="number" step="0.01" min="0.01" id="assetPriceField" required placeholder="125.50" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-semibold focus:outline-none focus:border-brand-600" />
+          </div>
+          <div>
+            <label class="block font-bold text-[#1E242B] mb-1">Jumlah Unit *</label>
+            <input type="number" step="0.01" min="0.01" id="assetQtyField" required placeholder="25" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-semibold focus:outline-none focus:border-brand-600" />
+          </div>
+          <div>
+            <label class="block font-bold text-[#1E242B] mb-1">24h (%) *</label>
+            <input type="number" step="0.1" id="assetChangeField" required placeholder="1.8" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-semibold focus:outline-none focus:border-brand-600" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-[#1E242B] mb-1">URL Gambar / Logo Opsional</label>
+          <input type="url" id="assetLogoField" placeholder="https://..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-medium focus:outline-none focus:border-brand-600" />
+        </div>
+
+        <div class="pt-3 flex items-center justify-end gap-2">
+          <button type="button" data-click="closeModal" data-arg="assetModal" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold">Batal</button>
+          <button type="submit" class="px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold shadow-sm">Simpan Aset</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL 2: CREATE / UPDATE TRANSACTION (LOAD FUNDS / WITHDRAW)          -->
+  <!-- ===================================================================== -->
+  <div id="txModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+    <div data-click="closeModal" data-arg="txModal" class="fixed inset-0 bg-slate-900/45 backdrop-blur-xs"></div>
+    <div class="relative bg-white rounded-3xl w-full max-w-md p-6 shadow-2xl z-10 animate-stagger-1">
+      <div class="flex items-center justify-between mb-4">
+        <h3 id="txModalTitle" class="text-lg font-bold text-[#1E242B]">Load More Funds / Transaksi</h3>
+        <button data-click="closeModal" data-arg="txModal" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center text-sm">✕</button>
+      </div>
+
+      <form id="txForm" data-submit="handleTxSubmit" class="space-y-3.5 text-xs">
+        <input type="hidden" id="txIdField" />
+
+        <div>
+          <label class="block font-bold text-[#1E242B] mb-1">Jenis Transaksi *</label>
+          <select id="txTypeField" data-change="autoFillTxLabel" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-semibold focus:outline-none focus:border-brand-600">
+            <option value="deposit">Deposit — Funds Loaded (+)</option>
+            <option value="withdraw">Withdrawal — Funds Withdraw (-)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block font-bold text-[#1E242B] mb-1">Keterangan *</label>
+          <input type="text" id="txTitleField" required value="Funds Loaded" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-medium focus:outline-none focus:border-brand-600" />
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-[#1E242B] mb-1">Nominal (USD) *</label>
+            <input type="number" step="1" min="1" id="txAmountField" required placeholder="2500" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-bold focus:outline-none focus:border-brand-600" />
+          </div>
+          <div>
+            <label class="block font-bold text-[#1E242B] mb-1">Tanggal *</label>
+            <input type="text" id="txDateField" required value="19 Nov 2026" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-medium focus:outline-none focus:border-brand-600" />
+          </div>
+        </div>
+
+        <div class="pt-3 flex items-center justify-end gap-2">
+          <button type="button" data-click="closeModal" data-arg="txModal" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold">Batal</button>
+          <button type="submit" class="px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold shadow-sm">Konfirmasi</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL 3: CONFIRMATION DIALOG (DELETE)                                 -->
+  <!-- ===================================================================== -->
+  <div id="confirmModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+    <div data-click="closeModal" data-arg="confirmModal" class="fixed inset-0 bg-slate-900/45 backdrop-blur-xs"></div>
+    <div class="relative bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl z-10 text-center">
+      <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center mx-auto mb-3 text-xl font-bold">!</div>
+      <h3 class="text-base font-bold text-[#1E242B] mb-1">Konfirmasi Penghapusan</h3>
+      <p id="confirmModalMessage" class="text-xs text-slate-500 mb-5">Apakah Anda yakin ingin menghapus item ini? Saldo portofolio akan diperbarui otomatis.</p>
+      <div class="flex items-center justify-center gap-2.5 text-xs">
+        <button data-click="closeModal" data-arg="confirmModal" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold">Batal</button>
+        <button id="confirmDeleteActionBtn" class="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold">Ya, Hapus</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- TOAST NOTIFICATION                                                    -->
+  <!-- ===================================================================== -->
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+</body>
+</html>
